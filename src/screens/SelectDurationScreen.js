@@ -6,8 +6,6 @@ const SelectDurationScreen = () => {
   const timeIntervel = [
     "15min",
     "30min",
-    "30min",
-    "30min",
     "45min",
     "1hr",
     "1hr 15min",
@@ -40,7 +38,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   dropdown: {
-    backgroundColor: "rgb(0,150,255)",
+    backgroundColor: "rgb(0,200,255)",
     width: 100,
     padding: 0,
     marginLeft: 70,
@@ -60,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   dropdownList: {
-    backgroundColor: "rgb(0,150,255)",
+    backgroundColor: "rgb(255,255,255)",
   },
 });
 export default SelectDurationScreen;
