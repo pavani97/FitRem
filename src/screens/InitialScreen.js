@@ -4,6 +4,7 @@ import { StyleSheet, SafeAreaView, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Spacer from "../components/Spacer";
 import BeepReaminder from "./beepRemainder";
+import SelectDurationScreen from "./SelectDurationScreen";
 const InitialScreen = () => {
   const [mydate, setDate] = useState(new Date());
   const [displaymode, setMode] = useState("time");
@@ -33,34 +34,38 @@ const InitialScreen = () => {
       <Text h3 style={styles.welText}>
         Welcome
       </Text>
-      <Spacer />
-      <Text style={styles.text}>At what time You want to Excercise daily?</Text>
+      <Spacer>
+        <Text style={styles.text}>
+          At what time You want to Excercise daily?
+        </Text>
 
-      <Button
-        style={styles.button}
-        onPress={displayTimepicker}
-        title="SET TIME"
-      />
-
-      {isDisplayDate && (
-        <DateTimePicker
-          style={{ width: "100%" }}
-          value={mydate}
-          mode={displaymode}
-          is24Hour={true}
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={changeSelectedDate}
+        <Button
+          style={styles.button}
+          onPress={displayTimepicker}
+          title="SET TIME"
         />
-      )}
 
-      <Text style={styles.text}>{text}</Text>
+        {isDisplayDate && (
+          <DateTimePicker
+            style={{ width: "100%" }}
+            value={mydate}
+            mode={displaymode}
+            is24Hour={true}
+            display={Platform.OS === "ios" ? "inline" : "default"}
+            onChange={changeSelectedDate}
+          />
+        )}
+
+        <Text style={styles.text}>{text}</Text>
+      </Spacer>
+      <Spacer>
+        <SelectDurationScreen />
+      </Spacer>
+      <Spacer>
+        <BeepReaminder />
+      </Spacer>
       <Spacer />
-      <Text style={styles.text}>How long will you exercise?</Text>
-      <Spacer />
-      <BeepReaminder />
-      <Spacer />
-      <Spacer />
-      <Button title="save" />
+      <Button style={styles.button} title="save" />
     </SafeAreaView>
   );
 };
@@ -76,6 +81,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   button: {
+    width: 150,
+    borderRadius: 10,
     alignSelf: "center",
   },
 });
