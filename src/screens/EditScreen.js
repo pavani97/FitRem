@@ -1,45 +1,26 @@
 import React, { useState } from "react";
 import { Button, Text, View } from "react-native-elements";
 import { StyleSheet, SafeAreaView, Platform } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import Spacer from "../components/Spacer";
-import BeepReaminder from "./beepRemainder";
-import SelectDurationDropdown from "./SelectDurationDropdown";
-import moment from "moment";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import BeepDurationDropdown from "../components/beepRemainder";
+import SelectDurationDropdown from "../components/SelectDurationDropdown";
+import { TimePicker } from "react-native-simple-time-picker";
 
 const EditScreen = ({ route, navigation }) => {
-  const msg = navigation.getParam("item");
-  const [mydate, setDate] = useState(new Date());
-  const [isDisplayDate, setShowDate] = useState(false);
-  const [text, setText] = useState(false);
+  const {
+    mydate,
+    exerciseDuration,
+    beepDuration,
+    setEditedDuration,
+    setEditedBeepDuration,
+    setEditedTimeValue,
+  } = route.params;
 
-  const onChangeTime = (event, selectedTime) => {
-    const currentTime = selectedTime || mydate;
-    setShowDate(false);
-    let tempDate = new Date(currentTime);
-    let fTime =
-      "Hours: " + tempDate.getHours() + " Minutes: " + tempDate.getMinutes();
-    setText(fTime);
+  const [mydate1, setDate] = useState(mydate);
 
-    setDate(selectedTime);
-  };
-  console.log(text);
-
-  const displayTimepicker = () => {
-    setShowDate(true);
-  };
-  const saveData = async () => {
-    const val = JSON.stringify(mydate);
-    AsyncStorage.setItem("_key_", val);
-    try {
-      const selectDuration = await AsyncStorage.getItem("durationtime");
-      const beepRemainder = await AsyncStorage.getItem("beeptime");
-      // console.log(selectDuration, beepRemainder);
-      alert(text);
-    } catch (e) {
-      console.log(e);
-    }
+  const handleChange = (e) => {
+    setDate(e);
+    setEditedTimeValue(e);
   };
 
   return (
@@ -49,33 +30,26 @@ const EditScreen = ({ route, navigation }) => {
           At what time You want to Excercise daily?
         </Text>
 
-        <Button
-          buttonStyle={{ width: 150, marginTop: 10, alignSelf: "center" }}
-          type="solid"
-          onPress={displayTimepicker}
-          title="SET TIME"
+        <TimePicker isAmpm value={mydate1} onChange={handleChange} />
+      </Spacer>
+      <Spacer>
+        <SelectDurationDropdown
+          exerciseDuration={exerciseDuration}
+          onSelectedDuration={setEditedDuration}
         />
-        <Text style={styles.text}>{msg}</Text>
-        {isDisplayDate && (
-          <DateTimePicker
-            style={{ width: "100%" }}
-            value={mydate}
-            mode="time"
-            is24Hour={true}
-            display={Platform.OS === "ios" ? "inline" : "default"}
-            onChange={onChangeTime}
-          />
-        )}
       </Spacer>
       <Spacer>
-        <SelectDurationDropdown />
-      </Spacer>
-      <Spacer>
-        <BeepReaminder />
+        <BeepDurationDropdown
+          beepDuration={beepDuration}
+          onSelectedBeepDuration={setEditedBeepDuration}
+        />
       </Spacer>
       <Spacer />
+
       <Button
-        onPress={saveData}
+        onPress={() => {
+          navigation.navigate("HomeScreen");
+        }}
         buttonStyle={{ width: 150, marginTop: 10, alignSelf: "center" }}
         title="SAVE"
       />

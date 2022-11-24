@@ -3,25 +3,9 @@ import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
 import SelectList from "react-native-select-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BeepDurationDropdown = () => {
-  const timeIntervel = [
-    "15 secs",
-    "30 secs",
-    "45 secs",
-    "1 min",
-    "1 m 15 s",
-    "1 m 30 s",
-    "1 m 45 s",
-    "2 mins",
-  ];
-  const [selected, setSelected] = useState("");
-  const remainderNotification = (selectedValue) => {
-    console.log("from beep", selectedValue);
-    setSelected(selectedValue);
-    AsyncStorage.setItem("beeptime", selectedValue);
-  };
+const BeepDurationDropdown = ({ beepDuration, onSelectedBeepDuration }) => {
+  const timeIntervel = ["1 min", "2 min", "5 min"];
 
   return (
     <View>
@@ -30,12 +14,12 @@ const BeepDurationDropdown = () => {
         (your phone will beep on each time)
       </Text>
       <SelectList
-        defaultButtonText="15 secs"
+        defaultButtonText="0"
         buttonStyle={styles.button}
         dropdownStyle={{ backgroundColor: "lightgray" }}
         data={timeIntervel}
-        onSelect={(data) => remainderNotification(data)}
-        defaultValue={selected}
+        onSelect={(data) => onSelectedBeepDuration(data)}
+        defaultValue={beepDuration}
         renderDropdownIcon={() => (
           <AntDesign
             style={styles.icon}

@@ -3,39 +3,21 @@ import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
 import SelectList from "react-native-select-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const SelectDurationDropdown = () => {
-  const timeIntervel = [
-    "15min",
-    "30min",
-    "45min",
-    "1hr",
-    "1hr 15min",
-    "1hr 30min",
-    "1hr 45min",
-    "2hrs",
-  ];
-  const [selected, setSelected] = useState("");
-
-  const selectedTimerValue = (selectedValue) => {
-    console.log("from select", selectedValue);
-    setSelected(selectedValue);
-    AsyncStorage.setItem("durationtime", selectedValue);
-  };
+const SelectDurationDropdown = ({ onSelectedDuration, exerciseDuration }) => {
+  const timeIntervel = ["1 min","15 mins", "30 mins", "45 mins", "60 mins"];
 
   return (
     <View>
-      <Text h5 style={{ alignSelf: "center" }}>
-        How long will you exercise daily?
-      </Text>
+      <Text style={styles.text}>How long will you exercise daily?</Text>
+
       <SelectList
-        defaultButtonText="15 secs"
+        defaultButtonText="0"
         buttonStyle={styles.button}
         dropdownStyle={{ backgroundColor: "lightgray" }}
         data={timeIntervel}
-        onSelect={(data) => selectedTimerValue(data)}
-        defaultValue={selected}
+        onSelect={(data) => onSelectedDuration(data)}
+        defaultValue={exerciseDuration}
         renderDropdownIcon={() => (
           <AntDesign
             style={styles.icon}
@@ -61,7 +43,7 @@ const styles = StyleSheet.create({
   },
   text: {
     alignSelf: "center",
-    fontSize: 20,
+    fontSize: 19,
   },
 });
 

@@ -29,19 +29,18 @@ export default function WelcomeScreen({ navigation }) {
   const anim = useRef(new Animated.Value(1));
 
   useEffect(() => {
-    // makes the sequence loop
     Animated.loop(
-      // runs given animations in a sequence
       Animated.sequence([
-        // increase size
         Animated.timing(anim.current, {
           toValue: 2,
           duration: 2000,
+          useNativeDriver: true,
         }),
-        // decrease size
+
         Animated.timing(anim.current, {
           toValue: 1,
           duration: 2000,
+          useNativeDriver: true,
         }),
       ])
     ).start();
@@ -59,31 +58,31 @@ export default function WelcomeScreen({ navigation }) {
 
   return (
     <View
-      style={{ alignItems: "center", marginTop: 50 }}
+      style={{ alignItems: "center", marginTop: 160 }}
       onLayout={onLayoutRootView}
     >
-      <Text h2 style={{ marginBottom: 40 }}>
-        Welcome
+      <Text h1 style={{ marginBottom: 40, fontStyle: "italic" }}>
+        WELCOME
       </Text>
       <Animated.View style={{ transform: [{ scale: anim.current }] }}>
         <Ionicons
           style={{ alignSelf: "center", alignSelf: "center" }}
           name="fitness"
-          size={50}
+          size={55}
           color="red"
         />
       </Animated.View>
-      <TouchableOpacity onPress={() => navigation.navigate("SetRemainder")}>
+      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
         <Text
           style={{
-            fontSize: 20,
+            fontSize: 27,
             color: "blue",
-            marginTop: 20,
+            marginTop: 50,
             alignSelf: "center",
           }}
         >
           Lets Go
-          <Entypo name="rocket" style={{ margin: 3 }} size={30} />
+          <Entypo name="rocket" style={{ margin: 13 }} size={30} />
         </Text>
       </TouchableOpacity>
     </View>
