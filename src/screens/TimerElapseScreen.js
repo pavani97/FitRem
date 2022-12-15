@@ -1,55 +1,55 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, LogBox } from "react-native";
 import { Button } from "react-native-elements";
 import { Audio } from "expo-av";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
 
 export default function TimerElapseScreen({ route, navigation }) {
-  const { ExerciseDuration, BeepDuration } = route.params;
-  var str = ExerciseDuration;
-  var time = "";
-  var parts = str.split(" ");
-  for (var i = 0; i < parts.length; i++) {
-    if (parseInt(parts[i].trim(), 10)) {
-      time = parts[0];
-    }
-  }
-  var str1 = BeepDuration;
-  var beep = "";
-  var parts1 = str1.split(" ");
-  for (var i = 0; i < parts1.length; i++) {
-    if (parseInt(parts1[i].trim(), 10)) {
-      beep = parts1[0];
-    }
-  }
-
+  const { ExerciseDuration, BeepDuration, myDate } = route.params;
   const START_HOUR = 0;
-  const START_SECOND = 59;
-  let milliBeep = beep * 60000;
+  const START_SECOND = 0;
+  let milliBeep = BeepDuration * 60000;
 
   const [repeat, isRepeat] = useState(milliBeep);
   const [currentHours, setHours] = useState(START_HOUR);
   const [currentSeconds, setSeconds] = useState(START_SECOND);
-  const [currentMinutes, setMinutes] = useState(time);
+  const [currentMinutes, setMinutes] = useState(ExerciseDuration);
   const [sound, setSound] = useState();
   const [isStop, setIsStop] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [fininsh, isFinish] = useState(false);
-  const stopHandler = () => {
+  const [timer, setTimer] = useState([]);
+
+  const pauseHandler = () => {
+    const newArray = [...timer];
+    newArray[newArray.length - 1].end = Date.now();
+    setTimer(newArray);
+    isFinish(true);
     setIsStop(true);
     setIsRunning(false);
   };
   const startHandler = () => {
+    const newArray = [...timer];
+    newArray.push({ start: Date.now() });
+    console.log('from start',newArray);
+    setTimer(newArray);
     setIsRunning(true);
   };
   const resetHandler = () => {
     setIsStop(false);
     setIsRunning(false);
     isRepeat(0);
-    setMinutes(time);
+    setMinutes(ExerciseDuration);
     setHours(START_HOUR);
+    isFinish(false);
     setSeconds(START_SECOND);
   };
-  const resumeHandler = () => {
+  const resumeHandler = async () => {
+    const newArray = [...timer];
+    newArray.push({ start: Date.now() });
+    setTimer(newArray);
+    isFinish(false);
     setIsRunning(true);
     setIsStop(false);
   };
@@ -78,7 +78,6 @@ export default function TimerElapseScreen({ route, navigation }) {
           isFinish(true);
         }
         isRepeat((v) => v - 1000);
-        console.log(repeat);
       }, 1000);
 
       return () => {
@@ -86,13 +85,38 @@ export default function TimerElapseScreen({ route, navigation }) {
       };
     }
   });
-
   useEffect(() => {
     if (repeat == 0) {
       isRepeat(milliBeep);
       playSound();
     }
   });
+
+  const saveData = async () => {
+    var items = {
+      date: Date.now(myDate),
+      timebreakdown: timer,
+      scheduledMinutes: ExerciseDuration,
+    };
+    try {
+      const values = await AsyncStorage.getItem("HistoryList_key");
+      let storedHistoryValues = JSON.parse(values);
+      const historyValues = storedHistoryValues
+        ? [...storedHistoryValues, items]
+        : [items];
+      await AsyncStorage.setItem(
+        "HistoryList_key",
+        JSON.stringify(historyValues)
+      );
+      console.log("from store", historyValues);
+      await AsyncStorage.setItem("History_Key", JSON.stringify(items));
+    } catch (e) {}
+    navigation.navigate("Remainders List");
+    const newArray = [...timer];
+    newArray[newArray.length - 1].end = Date.now();
+    console.log('from finish',newArray);
+    setTimer(newArray);
+  };
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(
@@ -110,28 +134,26 @@ export default function TimerElapseScreen({ route, navigation }) {
       : undefined;
   }, [sound]);
 
-  const hrs = currentHours < 10 ? "0" + currentHours : currentHours;
   const min = currentMinutes < 10 ? "0" + currentMinutes : currentMinutes;
   const secs = currentSeconds < 10 ? "0" + currentSeconds : currentSeconds;
+
   return (
     <View>
       <View style={styles.timer}>
         <Text style={{ alignSelf: "center", fontSize: 40 }}>
-          {hrs}:{min}:{secs}
+          {min}:{secs}
         </Text>
       </View>
       <View style={styles.container}>
         {!isRunning && !isStop && (
           <Button onPress={startHandler} title="START" />
         )}
-        {isRunning && !isStop && <Button onPress={stopHandler} title="PAUSE" />}
+        {isRunning && !isStop && (
+          <Button onPress={pauseHandler} title="PAUSE" />
+        )}
         {isStop && <Button onPress={resumeHandler} title="RESUME" />}
         <Button onPress={resetHandler} title="RESET" />
-        <Button
-          title="FINISH"
-          disabled={!fininsh}
-          onPress={() => navigation.navigate("FitnessRemainder")}
-        />
+        <Button title="FINISH" disabled={!fininsh} onPress={saveData} />
       </View>
     </View>
   );

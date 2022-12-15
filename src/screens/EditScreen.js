@@ -5,22 +5,40 @@ import Spacer from "../components/Spacer";
 import BeepDurationDropdown from "../components/beepRemainder";
 import SelectDurationDropdown from "../components/SelectDurationDropdown";
 import { TimePicker } from "react-native-simple-time-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EditScreen = ({ route, navigation }) => {
-  const {
-    mydate,
-    exerciseDuration,
-    beepDuration,
-    setEditedDuration,
-    setEditedBeepDuration,
-    setEditedTimeValue,
-  } = route.params;
-
+  const { mydate, exerciseDuration, beepDuration, index } = route.params;
   const [mydate1, setDate] = useState(mydate);
+  const [exerciseDuration1, setExerciseDuration] = useState(exerciseDuration);
+  const [beepDuration1, setBeepDuration] = useState(beepDuration);
 
   const handleChange = (e) => {
     setDate(e);
     setEditedTimeValue(e);
+  };
+  const setEditedDuration = (e) => {
+    setExerciseDuration(e);
+  };
+  const setEditedBeepDuration = (e) => {
+    setBeepDuration(e);
+  };
+  const setEditedTimeValue = (e) => {
+    setDate(e);
+  };
+
+  const storeData = async () => {
+    let items = {
+      storedDateValue: mydate1,
+      storedExerciseValue: exerciseDuration1,
+      storedBeepValue: beepDuration1,
+    };
+    try {
+      let temp = JSON.parse(await AsyncStorage.getItem("Remainderslist_key"));
+      temp[index] = items;
+      await AsyncStorage.setItem("Remainderslist_key", JSON.stringify(temp));
+    } catch (e) {}
+    navigation.navigate("Remainders List", { index });
   };
 
   return (
@@ -47,9 +65,7 @@ const EditScreen = ({ route, navigation }) => {
       <Spacer />
 
       <Button
-        onPress={() => {
-          navigation.navigate("HomeScreen");
-        }}
+        onPress={storeData}
         buttonStyle={{ width: 150, marginTop: 10, alignSelf: "center" }}
         title="SAVE"
       />

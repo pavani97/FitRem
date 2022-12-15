@@ -5,12 +5,11 @@ import SelectList from "react-native-select-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
 const SelectDurationDropdown = ({ onSelectedDuration, exerciseDuration }) => {
-  const timeIntervel = ["1 min","15 mins", "30 mins", "45 mins", "60 mins"];
+  const timeIntervel = [2, 10, 15, 30, 45, 60];
 
   return (
     <View>
       <Text style={styles.text}>How long will you exercise daily?</Text>
-
       <SelectList
         defaultButtonText="0"
         buttonStyle={styles.button}

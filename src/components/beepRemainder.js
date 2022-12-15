@@ -5,7 +5,7 @@ import SelectList from "react-native-select-dropdown";
 import AntDesign from "react-native-vector-icons/AntDesign";
 
 const BeepDurationDropdown = ({ beepDuration, onSelectedBeepDuration }) => {
-  const timeIntervel = ["1 min", "2 min", "5 min"];
+  const timeIntervel = [1, 2, 5];
 
   return (
     <View>
